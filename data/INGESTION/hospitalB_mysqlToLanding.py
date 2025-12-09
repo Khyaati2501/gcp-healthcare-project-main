@@ -12,24 +12,24 @@ bq_client = bigquery.Client()
 spark = SparkSession.builder.appName("HospitalAMySQLToLanding").getOrCreate()
 
 # Google Cloud Storage (GCS) Configuration
-GCS_BUCKET = "healthcare-bucket-22032025"
-HOSPITAL_NAME = "hospital-b"
+GCS_BUCKET = "healthcare-11-30"
+HOSPITAL_NAME = "hospital-B"
 LANDING_PATH = f"gs://{GCS_BUCKET}/landing/{HOSPITAL_NAME}/"
 ARCHIVE_PATH = f"gs://{GCS_BUCKET}/landing/{HOSPITAL_NAME}/archive/"
 CONFIG_FILE_PATH = f"gs://{GCS_BUCKET}/configs/load_config.csv"
 
 # BigQuery Configuration
-BQ_PROJECT = "avd-databricks-demo"
+BQ_PROJECT = "gcp-healthcare-479816"
 BQ_AUDIT_TABLE = f"{BQ_PROJECT}.temp_dataset.audit_log"
 BQ_LOG_TABLE = f"{BQ_PROJECT}.temp_dataset.pipeline_logs"
 BQ_TEMP_PATH = f"{GCS_BUCKET}/temp/"  
 
 # MySQL Configuration
 MYSQL_CONFIG = {
-    "url": "jdbc:mysql://34.59.188.6:3306/hospital_b_db?useSSL=false&allowPublicKeyRetrieval=true",
+    "url": "jdbc:mysql://136.115.147.255:3306/hospital-b-db",
     "driver": "com.mysql.cj.jdbc.Driver",
     "user": "myuser",
-    "password": "mypass"
+    "password": "Mypassword1!"
 }
 
 ##------------------------------------------------------------------------------------------------------------------##
@@ -42,7 +42,7 @@ def log_event(event_type, message, table=None):
         "timestamp": datetime.datetime.now().isoformat(),
         "event_type": event_type,
         "message": message,
-        "table": table
+        "table": table 
     }
     log_entries.append(log_entry)
     print(f"[{log_entry['timestamp']}] {event_type} - {message}")  # Print for visibility
@@ -109,7 +109,7 @@ def get_latest_watermark(table_name):
     query = f"""
         SELECT MAX(load_timestamp) AS latest_timestamp
         FROM `{BQ_AUDIT_TABLE}`
-        WHERE tablename = '{table_name}' and data_source = "hospital_b_db"
+        WHERE tablename = '{table_name}' and data_source = "hospital-b-db"
     """
     query_job = bq_client.query(query)
     result = query_job.result()
@@ -149,7 +149,7 @@ def extract_and_save_to_landing(table, load_type, watermark_col):
         
         # Insert Audit Entry
         audit_df = spark.createDataFrame([
-            ("hospital_b_db", table, load_type, df.count(), datetime.datetime.now(), "SUCCESS")], 
+            ("hospital-b-db", table, load_type, df.count(), datetime.datetime.now(), "SUCCESS")], 
             ["data_source", "tablename", "load_type", "record_count", "load_timestamp", "status"])
 
         (audit_df.write.format("bigquery")
@@ -174,7 +174,7 @@ def read_config_file():
 config_df = read_config_file()
 
 for row in config_df.collect():
-    if row["is_active"] == '1' and row["datasource"] == "hospital_b_db": 
+    if row["is_active"] == '1' and row["datasource"] == "hospital-b-db": 
         db, src, table, load_type, watermark, _, targetpath = row
         move_existing_files_to_archive(table)
         extract_and_save_to_landing(table, load_type, watermark)
