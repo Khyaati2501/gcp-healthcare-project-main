@@ -1,7 +1,7 @@
 import airflow
 from airflow import DAG
-from datetime import timedelta
-from airflow.utils.dates import days_ago
+from datetime import timedelta, datetime
+# from airflow.utils.dates import days_ago
 from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
 
 # Define constants
@@ -23,7 +23,7 @@ GOLD_QUERY = read_sql_file(SQL_FILE_PATH_3)
 # Define default arguments
 ARGS = {
     "owner": "Khyaati Bhumireddy",
-    "start_date": None,
+    "start_date": datetime(2025, 12, 8),
     "depends_on_past": False,
     "email_on_failure": False,
     "email_on_retry": False,
