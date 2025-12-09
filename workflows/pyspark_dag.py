@@ -59,7 +59,6 @@ ARGS = {
 # define the dag
 with DAG(
     dag_id="pyspark_dag",
-    #schedule_interval=None,
     schedule=None,
     description="DAG to start a Dataproc cluster, run PySpark jobs, and stop the cluster",
     default_args=ARGS,
