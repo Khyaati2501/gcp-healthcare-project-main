@@ -9,7 +9,7 @@ storage_client = storage.Client()
 bq_client = bigquery.Client()
 
 # Initialize Spark Session
-spark = SparkSession.builder.appName("HospitalAMySQLToLanding").getOrCreate()
+spark = SparkSession.builder.appName("HospitalBMySQLToLanding").getOrCreate()
 
 # Google Cloud Storage (GCS) Configuration
 GCS_BUCKET = "healthcare-11-30"
@@ -29,7 +29,7 @@ MYSQL_CONFIG = {
     "url": "jdbc:mysql://136.114.5.213:3306/hospital_a_db",
     "driver": "com.mysql.cj.jdbc.Driver",
     "user": "myuser",
-    "password": "myPassword1!"
+    "password": "Mypassword1!"
 }
 
 
